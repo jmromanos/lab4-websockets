@@ -54,16 +54,14 @@ public class ElizaServerTest {
 	}
 
 	@Test(timeout = 1000)
-	@Ignore
 	public void onChat() throws DeploymentException, IOException, URISyntaxException, InterruptedException {
-		// COMPLETE ME!!
-		List<String> list = new ArrayList<>();
+	    List<String> list = new ArrayList<>();
 		ClientEndpointConfig configuration = ClientEndpointConfig.Builder.create().build();
 		ClientManager client = ClientManager.createClient();
-		client.connectToServer(new ElizaEndpointToComplete(list), configuration, new URI("ws://localhost:8025/websockets/eliza"));
-		// COMPLETE ME!!
-		// COMPLETE ME!!
-		// COMPLETE ME!!
+        client.connectToServer(new ElizaEndpointToComplete(list), configuration, new URI("ws://localhost:8025/websockets/eliza"));
+		synchronized (list) {list.wait(); }
+		assertEquals(1,list.size());
+		assertEquals("We were discussing you, not me.",list.get(0));
 	}
 
 	@After
@@ -99,9 +97,7 @@ public class ElizaServerTest {
 
         @Override
         public void onOpen(Session session, EndpointConfig config) {
-
-            // COMPLETE ME!!!
-
+            session.getAsyncRemote().sendText("I hate you");
             session.addMessageHandler(new ElizaMessageHandlerToComplete());
         }
 
@@ -109,8 +105,9 @@ public class ElizaServerTest {
 
             @Override
             public void onMessage(String message) {
+                if (message.equals("We were discussing you, not me.")) {
                 list.add(message);
-                // COMPLETE ME!!!
+                synchronized (list) {list.notifyAll();} }
             }
         }
     }
