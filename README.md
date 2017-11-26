@@ -4,4 +4,5 @@ Please, go to the [Wiki](https://github.com/UNIZAR-30246-WebEngineering/lab4-web
 
 NIA    | User name | Repo | Build Status | Improvement | Score
 -------|-----------|------|--------------|-------------|--------
-538798 | Daniel Martinez Martinez | [Repo](https://github.com/danieluned/lab4-websockets/tree/test) | [![Build Status](https://travis-ci.org/danieluned/lab4-websockets-ws.svg?branch=test)](https://travis-ci.org/danieluned/lab4-websockets) | |
+538798 | Daniel Martinez Martinez | https://github.com/danieluned/lab4-websockets/tree/test | [![Build Status](https://travis-ci.org/danieluned/lab4-websockets.svg?branch=test)](https://travis-ci.org/danieluned/lab4-websockets) | |
+
