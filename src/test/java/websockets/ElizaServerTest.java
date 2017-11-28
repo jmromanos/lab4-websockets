@@ -6,8 +6,14 @@ import org.glassfish.tyrus.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 import websockets.web.ElizaServerEndpoint;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.junit4.SpringRunner;
+
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -21,17 +27,22 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment= WebEnvironment.RANDOM_PORT, classes = Application.class)
 public class ElizaServerTest {
 
     private static final Logger LOGGER = Grizzly.logger(ElizaServerTest.class);
 
-	private Server server;
+    private Server server;
 
+    @LocalServerPort
+	private int port;
+    /*
 	@Before
 	public void setup() throws DeploymentException {
-		server = new Server("localhost", 8025, "/websockets", new HashMap<String, Object>(), ElizaServerEndpoint.class);
+		server = new Server("localhost", port, "/websockets", new HashMap<String, Object>(), ElizaServerEndpoint.class);
 		server.start();
-	}
+	}*/
 
 	@Test(timeout = 5000)
 	public void onOpen() throws DeploymentException, IOException, URISyntaxException, InterruptedException {
@@ -46,7 +57,7 @@ public class ElizaServerTest {
 				session.addMessageHandler(new ElizaOnOpenMessageHandler(list, latch));
 			}
 
-		}, configuration, new URI("ws://localhost:8025/websockets/eliza"));
+		}, configuration, new URI("ws://localhost:"+port+"/websockets/eliza"));
         session.getAsyncRemote().sendText("bye");
         latch.await();
 		assertEquals(3, list.size());
@@ -58,16 +69,16 @@ public class ElizaServerTest {
 	    List<String> list = new ArrayList<>();
 		ClientEndpointConfig configuration = ClientEndpointConfig.Builder.create().build();
 		ClientManager client = ClientManager.createClient();
-        client.connectToServer(new ElizaEndpointToComplete(list), configuration, new URI("ws://localhost:8025/websockets/eliza"));
+        client.connectToServer(new ElizaEndpointToComplete(list), configuration, new URI("ws://localhost:"+port+"/websockets/eliza"));
 		synchronized (list) {list.wait(); }
 		assertEquals(1,list.size());
 		assertEquals("We were discussing you, not me.",list.get(0));
 	}
-
+    /*
 	@After
 	public void close() {
 		server.stop();
-	}
+	}*/
 
     private static class ElizaOnOpenMessageHandler implements MessageHandler.Whole<String> {
 
